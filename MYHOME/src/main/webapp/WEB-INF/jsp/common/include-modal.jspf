@@ -1,0 +1,315 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<script type="text/javascript">
+//Zone 검색 팝업창 open
+function findZoneID() {
+	
+	var htmlString = "";
+	$.ajax({
+		type    : 'POST',
+		url     : '/resource/computer/zoneSearchList.ajax',
+		cache   : false,
+		async   : false,
+		success : function(result) {
+			
+			
+			setZoneTable(result);
+		},
+		error   : function(request, status, error) {
+			alert(error);
+		}
+	});
+	
+	$("#zoneModal").modal('toggle');
+}
+
+
+//Zone 검색 팝업창 open 아작스후 테이블 그리기
+function setZoneTable(result) {
+	
+	$('#zoneTable tr').remove();
+	
+	var htmlString = "";
+	var zone_id="";
+	var zone_nm="";
+	$.each(result, function(i, item) {
+		zone_id=item.zone_id;
+		zone_nm=item.zone_nm;
+		htmlString += '<tr onclick="zoneInfoset(\''+zone_id+'\',\''+zone_nm+'\')">';
+		htmlString += '<td>'+item.zone_id+'</td>';
+		htmlString += '<td>'+item.zone_nm+'</td>';
+		htmlString += '<td>'+item.zone_addr+'</td>';
+		htmlString += '<td>'+item.zone_status_nm+'</td>';
+		htmlString += '</tr>'
+		//$('<tr onclick=zoneInfoset("'+zone_id+'","'+zone_nm+'")>').html(htmlString).appendTo('#zoneTable');
+	});
+	$('#zoneTable').html(htmlString);
+}
+
+//zone setting 하기
+function zoneInfoset(zone_id,zone_nm){
+	$("#zone_search_nm").val(zone_nm);
+	$("#zone_search_id").val(zone_id);
+	$('#zoneModal').modal('hide');
+
+}
+
+
+//Zone ID 초기화
+function initZoneID() {
+	$("#zone_search_id").val("");
+	$("#zone_search_nm").val("");
+}
+
+
+
+
+
+
+
+//COMPUTER Type 검색 팝업창 open
+function findComtypeID() {
+	
+	var htmlString = "";
+	$.ajax({
+		type    : 'POST',
+		url     : '/common/selectComtypeList.ajax',
+		cache   : false,
+		async   : false,
+		success : function(result) {
+			setComtypeTable(result);
+		},
+		error   : function(request, status, error) {
+			alert(error);
+		}
+	});
+	
+	$("#comtypeModal").modal('toggle');
+}
+
+
+//COMPUTER Type 검색 팝업창 open 아작스후 테이블 그리기
+function setComtypeTable(result) {
+	$('#comtypeTable tr').remove();
+	
+	var htmlString = "";
+	
+	$.each(result, function(i, item) {
+		//htmlString = '<td id="input_com_type_id">'+item.com_type_id+'</td>';
+		htmlString = '<td>'+item.com_type_name+'</td>';
+		htmlString += '<td>'+item.cpu+'</td>';
+		htmlString += '<td>'+item.board+'</td>';
+		htmlString += '<td>'+item.ram+'</td>';
+		htmlString += '<td>'+item.gpu+'</td>';
+		htmlString += '<td>'+item.tx_type_cd+'</td>';
+		//htmlString += '<td>'+item.stat_cd+'</td>';
+		$('<tr onclick=\"comtypeInfoset(\''+item.com_type_id+'\',\''+item.com_type_name+'\')\">').html(htmlString).appendTo('#comtypeTable');
+	});
+	
+}
+
+function comtypeInfoset(comtype_id, comtype_nm) {
+	$("#comtype_search_nm").val(comtype_nm);
+	$("#comtype_search_id").val(comtype_id);
+	$('#comtypeModal').modal('hide');
+
+}
+
+
+//COMPUTER ID 초기화
+function initComTypeID() {
+	$("#comtype_search_nm").val("");
+	$("#comtype_search_id").val("");
+}
+
+
+
+
+
+
+
+
+//Pd 가져오기 검색 부분
+function findPdID(){
+	 $.ajax({
+		type    : 'POST',
+		url     : '/common/selectPopupPdList.ajax',
+		
+		cache   : false,
+		async   : false,
+		success : function(result) {
+			setpdTable(result);
+			
+		},
+		error   : function(request, status, error) {
+			alert("상품 목록 조회 중 오류가 발생하였습니다.");
+		}
+	}); 
+	$("#pdModal").modal('toggle');
+}
+
+
+//조회한 상품 목록 테이블 그리기
+function setpdTable(data) {
+	$('#pdTable tr').remove();
+	
+	var htmlString = "";
+	var trString = "";
+	$.each(data, function(i, item) {
+		
+		htmlString 	= '<td>'+item.pd_nm+'</td>'; 
+		htmlString += '<td>'+item.com_type_name+'</td>';
+		htmlString += '<td>'+item.pd_desc+'</td>';
+		
+		trString = '<tr style="cursor:pointer;" class="" name="'+item.pd_nm+'" id="'+item.pd_id+'"  onclick="pdInfoset(\''+item.pd_id+'\',\''+item.pd_nm+'\')"\>';
+		$(trString).html(htmlString).appendTo('#pdTable');
+	});
+	
+}
+
+
+
+function pdInfoset(pd_id, pd_nm) {
+	$("#pd_search_nm").val(pd_nm);
+	$("#pd_search_id").val(pd_id);
+	$('#pdModal').modal('hide');
+
+}
+
+
+	
+function initPdID() {
+	$("#pd_search_nm").val("");
+	$("#pd_search_id").val("");
+}
+
+
+
+
+
+
+</script>
+
+	<!-- Comtype 검색모달 -->
+	<div class="modal fade" id="comtypeModal" tabindex="1" role="dialog" area-labelledby="myModallabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a class="close" data-dismiss="modal">&times;</a>
+					<h3>COMPUTER 목록</h3>
+				</div>
+				<div class="modal-body" >
+					<input type="text" class="form-control input-sm m-b-xs" id="filter2" placeholder="Search in table">
+					<table class="footable2 table-hover table" data-page-size="15" data-filter=#filter2>
+						<thead>
+							<tr>
+								<!-- <th>COMPUTER 타입 ID</th> -->
+								
+								<th>컴퓨터 타입 명</th>
+								<th>CPU</th>
+								<th>BOARD</th>
+								<th>RAM</th>
+								<th>GPU</th>
+								<th>TX 타입</th>
+								<!-- <th>COMPUTER 타입 상태</th> -->
+							</tr>
+						</thead>
+						<tbody id="comtypeTable">
+						</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="6">
+								<ul class="pagination pull-right"></ul>
+							</td>
+						</tr>
+					</tfoot>
+					</table>
+				</div>
+				<div class="modal-footer">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+<!-- Zone 검색 모달 -->
+	<div class="modal fade" id="zoneModal" tabindex="1" role="dialog" area-labelledby="myModallabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a class="close" data-dismiss="modal">&times;</a>
+					<h3>Zone 목록</h3>
+				</div>
+				<div class="modal-body" >
+					<input type="text" class="form-control input-sm m-b-xs" id="filter2" placeholder="Search in table">
+					<table class="footable2 table-hover table" data-page-size="15" data-filter=#filter2>
+						<thead>
+							<tr>
+								<th>ZONE ID</th>
+								<th>ZONE 명</th>
+								<th>ZONE 주소</th>
+								<th>ZONE 상태</th>
+							</tr>
+						</thead>
+						<tbody id="zoneTable">
+						</tbody>
+						<tfoot>
+										<tr>
+											<td colspan="4">
+												<ul class="pagination pull-right"></ul>
+											</td>
+										</tr>
+						</tfoot>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger pull-right" type="button" onclick="closeModal();">&nbsp;&nbsp;닫기&nbsp;&nbsp;</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+		
+		
+	 <!--  상품 모달 -->
+		
+	<div class="modal fade" id="pdModal" tabindex="1" role="dialog" area-labelledby="myModallabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<a class="close" data-dismiss="modal">&times;</a>
+					<h3>상품 목록</h3>
+				</div>
+				<div class="modal-body" >
+					<input type="text" class="form-control input-sm m-b-xs" id="filter2" placeholder="Search in table">
+					<table class="footable3 table-hover table" data-page-size="15" data-filter=#filter2>
+						<thead>
+							<tr>
+								<th>상품명</th>
+								<th>상품 컴퓨터 타입</th>
+								<th>상품 설명</th>
+							</tr>
+						</thead>
+						<tbody id="pdTable">
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="6">
+									<ul class="pagination pull-right"></ul>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			<!-- 	<div class="modal-footer">
+					<button class="btn btn-danger pull-right" type="button" onclick="closeModal('pdModal');">&nbsp;&nbsp;닫기&nbsp;&nbsp;</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
+		 
+	
+	 
+	

@@ -1,0 +1,25 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+
+<script type="text/javascript">
+
+function createAlert(msg){	
+	$("#message1").modal('toggle');
+	$('#message_content').html(msg);
+}
+function alertclose(){	
+	$('#message1').modal('hide');
+}
+</script>
+<div class="modal fade" id="message1" tabindex="1" role="dialog" style="position:absolute; top: 200px;">
+	<div class="modal-dialog" role="document">		
+		<div class="modal-content">
+			<div class="modal-header">메시지<a class="close" data-dismiss="modal">&times;</a></div>
+			<div class="modal-body" id="message_content" align="center">
+				
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-success pull-right" type="button" id="saveDisk" onclick="alertclose()">&nbsp;&nbsp;확인&nbsp;&nbsp;</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<%@ page contentType="text/html; charset=UTF-8"%>
+<jsp:include page="/WEB-INF/jsp/common/css.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/javascript.jsp" />
+<style>
+th,td{
+text-align: center;
+} 
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+</style>
+<script type="text/javaScript" language="javascript">
+$(document).ready(function() {
+});
+
+function setMenuList() {
+	var requestURI = "${requestURI}";
+	//var menuList = ${userMenuList};
+	var menuList = "";
+	var htmlStr = $("#headerTop").html();
+	var menuSize = menuList.length;
+	var menuHtml = "";
+	
+	var menuNm = "";
+	var menuPath = "";
+	var menuIcon = "";
+	
+	var menuHeader = '<div><nav class="navbar navbar-inverse"><div class="container-fluid"><ul class="nav navbar-nav">';
+	var menuStr = "";
+	
+	var highMenuID ="";
+	var diffCount;
+	var activeHighMenuID="";
+	for(var i=0; i<menuSize; i++) {
+		
+		menuNm = menuList[i].menu_nm;
+		menuPath = menuList[i].menu_path;
+		menuIcon = menuList[i].menu_icon;
+		menuDepth = menuList[i].menu_depth;
+		highMenuID = menuList[i].high_menu_id;
+		
+		
+		diffCount = i + 1 < menuSize ? i+1 : menuSize-1; // 다음 메뉴에 대한 비교 카운트
+		
+		
+		
+		if(menuPath==requestURI) {
+			
+				classActive="active";
+				activeHighMenuID=highMenuID;
+				$("#menuName").html(menuNm);
+				console.log("activeHighMenuID"+activeHighMenuID);
+				
+				
+				
+		}else{
+			
+			classActive="dropdown"
+			
+		} 
+		
+		if(menuDepth=='1'){
+			if(highMenuID==menuList[diffCount].high_menu_id){
+				menuStr = menuStr+'<li class="'+classActive+'" id="'+highMenuID+'" ><a  href="'+menuPath+'" data-toggle="dropdown"   class="dropdown-toggle"  ><i class="fa '+menuIcon+'"></i>'+menuNm+'<b class="caret"></b></a><ul class="dropdown-menu">'
+			}else{
+				menuStr = menuStr+'<li class="'+classActive+'" id="'+highMenuID+'"  ><a href="'+menuPath+'"<i class="fa '+menuIcon+'"></i>'+menuNm+'</a></li>';
+			}
+			
+		}else if(menuDepth=='2'){
+			
+			if(highMenuID==menuList[diffCount].high_menu_id && menuDepth == menuList[diffCount].menu_depth ){
+				menuStr = menuStr + '<li><a href="'+menuPath+'"  >'+menuNm+'</a></li>';
+			}else if(highMenuID==menuList[diffCount].high_menu_id){
+				classActive = "dropdown dropdown-submenu";
+				menuStr = menuStr+'<li class="'+classActive+'"  > <a href="'+menuPath+'" data-toggle="dropdown"  >'+menuNm+'</a><ul class="dropdown-menu">';
+			}else{
+				menuStr = menuStr+'<li><a href="'+menuPath+'" >'+menuNm+'</a></li></ul></li>'
+			}
+			
+			
+		}else if(menuDepth=='3'){
+			if(highMenuID==menuList[diffCount].high_menu_id && menuDepth == menuList[diffCount].menu_depth ){
+				menuStr = menuStr+'<li><a href="'+menuPath+'">'+menuNm+'</a></li>';
+			}else if(highMenuID==menuList[diffCount].high_menu_id){
+				menuStr = menuStr+'<li><a href="'+menuPath+'">'+menuNm+'</a></li></ul></li>';
+			}else{
+				menuStr = menuStr+'<li><a href="'+menuPath+'">'+menuNm+'</a></li></ul></li></ul></li> ';
+				
+			}
+			
+		}
+		
+	}
+	
+    var menuFooter = '</ul></div></nav></div>';
+    
+    $("#headerTop").html(htmlStr+menuHeader+menuStr+menuFooter);
+    $('#'+activeHighMenuID).attr('class','active');
+    console.log(activeHighMenuID);
+}
+</script>
+<head>
+	<title>KCC DEMO</title>
+</head>
+<body>
+<div id="page-wrapper" class="gray-bg">
+	<div class="row border-bottom" id="headerTop">
+	    <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+	        <ul class="nav navbar-top-links navbar-left" style="font-size:20px;cursor: pointer;" onclick="location.href='#'">
+	        KCC DEMO
+	        </ul>
+	        <ul class="nav navbar-top-links navbar-right">
+	            <li class="dropdown">
+	                <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+	                    <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+	                </a>
+	                <ul class="dropdown-menu dropdown-alerts">
+	                    <li>
+	                        <a href="#">
+	                            <div>
+	                                <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+	                                <span class="pull-right text-muted small">4 minutes ago</span>
+	                            </div>
+	                        </a>
+	                    </li>
+	                    <li class="divider"></li>
+	                    <li>
+	                        <a href="#">
+	                            <div>
+	                                <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+	                                <span class="pull-right text-muted small">12 minutes ago</span>
+	                            </div>
+	                        </a>
+	                    </li>
+	                    <li class="divider"></li>
+	                    <li>
+	                        <a href="#">
+	                            <div>
+	                                <i class="fa fa-upload fa-fw"></i> Server Rebooted
+	                                <span class="pull-right text-muted small">4 minutes ago</span>
+	                            </div>
+	                        </a>
+	                    </li>
+	                    <li class="divider"></li>
+	                    <li>
+	                        <div class="text-center link-block">
+	                            <a href="#">
+	                                <strong>See All Alerts</strong>
+	                                <i class="fa fa-angle-right"></i>
+	                            </a>
+	                        </div>
+	                    </li>
+	                </ul>
+	            </li>
+	           	<li>
+	           		<a href="#">
+	           			<i class="fa fa-male"></i>MY PAGE
+	           		</a>
+	           	</li>
+	           	&nbsp;&nbsp;
+	            <li>
+	                <a href="#">
+	                    <i class="fa fa-sign-out"></i> Log out
+	                </a>
+	            </li>
+	        </ul>
+	    </nav>
+    </div>
